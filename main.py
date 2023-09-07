@@ -38,7 +38,34 @@ class bat:
         if key[pygame.K_DOWN] and self.rect.bottom < SCREEN_HEIGHT:
             self.rect.move_ip(0, self.speed)
     def draw(self):
-        pygame.draw.rect(game_screen, WHITE_COLOR, self.rect)       
+        pygame.draw.rect(game_screen, WHITE_COLOR, self.rect)   
+        
+class egg:
+    def __init__(self, x , y) -> None:
+        self.x = x
+        self.y = y
+        self.ball_rad = 8
+        self.rect = Rect(self.x, self.y, self.ball_rad * 2, self.ball_rad * 2)
+        self.speed_x = -4
+        self.speed_y = 4
+        
+    def draw(self):
+        pygame.draw.circle(game_screen, WHITE_COLOR, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
+        
+    def move(self):
+        
+        if self.rect.bottom > SCREEN_HEIGHT:
+            self.speed_y *= -1 
+        if self.rect.top < LINE_MARGIN:
+            self.speed_y *= -1
+        if self.rect.left < 0:
+            
+            
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+        
+        
+            
         
 
 def draw_on_game_screen():
@@ -51,8 +78,12 @@ def draw_text_on_screen(text:str, font, text_colour, x, y):
     
 
 # Bats
-player_bat = bat(SCREEN_WIDTH - 20, SCREEN_HEIGHT // 2, 30) # Player Bat
+player_bat = bat(SCREEN_WIDTH - 20, SCREEN_HEIGHT // 2, 15) # Player Bat
 ai_bat = bat(10, SCREEN_HEIGHT // 2, 30) # AI Bat
+
+# Ball 
+ball = egg(SCREEN_WIDTH - 40, SCREEN_HEIGHT // 2 + 50)
+
 
 
 game_runing = True
@@ -68,8 +99,14 @@ while game_runing:
     player_bat.draw()
     ai_bat.draw()
     
+    # Draw Ball
+    ball.draw()
+    
     # Move Player's Bat
     player_bat.move()
+    
+    # Move Ball
+    ball.move()
     # Checking for all event in the game
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
