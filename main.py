@@ -1,117 +1,117 @@
-import pygame 
-from pygame.locals import *
+import sys
+import pygame
+import random
+
+# Initilize Pygame
+pygame.init()
+
+# Set Clock for Game
+clock = pygame.time.Clock() 
 
 # Game Variables
 GAME_NAME = "Pong of the Geeks"
-SCREEN_SIZE = SCREEN_WIDTH, SCREEN_HEIGHT = (600, 500)
-BACKGROUND_COLOUR = (12,0,0)
-WHITE_COLOR = (255,255,255)
+SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT) = (1200, 700)
+BACKGROUND_COLOUR = pygame.Color("grey12")
+LIGHT_GREY = (200,200,200)
+MATRIX_GREEN = (0,255, 0)
+NEON_CYAN = (0,255,255)
+ELECTRIC_BLUE = (0, 191, 255)
 LINE_MARGIN = 40
 
 
-# Initialize Pygame
-pygame.init()
+# Setting up main window and Caption
+screen = pygame.display.set_mode(SCREEN_SIZE)
+pygame.display.set_caption(GAME_NAME)
 
-gameclock = pygame.time.Clock()
-fps = 60
 
-# Game variable 
-ai_score = 0
-player_score = 0
-font = pygame.font.SysFont("San Serif", 30)
-ai = "E.R.I."
-# Set Game Properties
-game_screen = pygame.display.set_mode((SCREEN_SIZE)) # Set Screen Size
-pygame.display.set_caption(GAME_NAME) #Set Game 
+# Ball cordinates and property in space
+ball = pygame.Rect(SCREEN_WIDTH//2-10, SCREEN_HEIGHT//2-10, 20, 20)
+ball_xspeed  = random.choice((-7, 7))
+ball_yspeed  = random.choice((-7, 7))
 
-class bat:
-    def __init__(self, x, y, bat_speed:int):
-        self.x = x 
-        self.y =  y
-        self.rect = Rect(self.x, self.y, 10, 100)
-        self.speed = bat_speed
-        
-    def move(self):
-        key = pygame.key.get_pressed()
-        if key[pygame.K_UP] and self.rect.top > LINE_MARGIN:
-            self.rect.move_ip(0, -1 * self.speed)
-        if key[pygame.K_DOWN] and self.rect.bottom < SCREEN_HEIGHT:
-            self.rect.move_ip(0, self.speed)
-    def draw(self):
-        pygame.draw.rect(game_screen, WHITE_COLOR, self.rect)   
-        
-class egg:
-    def __init__(self, x , y) -> None:
-        self.x = x
-        self.y = y
-        self.ball_rad = 8
-        self.rect = Rect(self.x, self.y, self.ball_rad * 2, self.ball_rad * 2)
-        self.speed_x = -4
-        self.speed_y = 4
-        
-    def draw(self):
-        pygame.draw.circle(game_screen, WHITE_COLOR, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
-        
-    def move(self):
-        
-        if self.rect.bottom > SCREEN_HEIGHT:
-            self.speed_y *= -1 
-        if self.rect.top < LINE_MARGIN:
-            self.speed_y *= -1
-        if self.rect.left < 0:
-            
-            
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
-        
-        
-            
-        
+def teleportball():
+    global ball_xspeed, ball_yspeed
+    ball.center = (SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
+    ball_xspeed *= random.choice((1,-1))
+    ball_yspeed *= random.choice((1,-1))
 
-def draw_on_game_screen():
-    game_screen.fill(BACKGROUND_COLOUR)
-    pygame.draw.line(game_screen, WHITE_COLOR, (0, LINE_MARGIN), (SCREEN_WIDTH, LINE_MARGIN))
+def ballPropertiesAnimation():
+    global ball_xspeed, ball_yspeed
+    ball.x += ball_xspeed
+    ball.y += ball_yspeed
 
-def draw_text_on_screen(text:str, font, text_colour, x, y):
-    img = font.render(text, True, text_colour)
-    game_screen.blit(img, (x,y))
-    
+    if ball.top <= 0 or ball.bottom >= SCREEN_HEIGHT:
+        ball_yspeed *= -1
+    if ball.left <= 0 or ball.right >= SCREEN_WIDTH:
+        teleportball()
 
-# Bats
-player_bat = bat(SCREEN_WIDTH - 20, SCREEN_HEIGHT // 2, 15) # Player Bat
-ai_bat = bat(10, SCREEN_HEIGHT // 2, 30) # AI Bat
+    if ball.colliderect(player) or ball.colliderect(opponent):
+        ball_xspeed *= -1
 
-# Ball 
-ball = egg(SCREEN_WIDTH - 40, SCREEN_HEIGHT // 2 + 50)
+# Player Geometry and Properties
+player = pygame.Rect(SCREEN_WIDTH-10, SCREEN_HEIGHT//2 - 55, 5, 140)
+player_speed = 0
+def playerBatRestriction():
+    global player_speed
+    if player.top <= 0:
+        player.top = 0
+    if player.bottom >= SCREEN_HEIGHT:
+        player.bottom = SCREEN_HEIGHT
+# opponent cordinates and Properties
+opponent = pygame.Rect(5, SCREEN_HEIGHT//2 - 55, 5, 140)
+opponent_speed = 20
+def opponentBatRestriction():
+    global opponent_speed
+    if opponent.top <= 0:
+        opponent.top = 0
+    if opponent.bottom >= SCREEN_HEIGHT:
+        opponent.bottom = SCREEN_HEIGHT
 
 
 
-game_runing = True
-# Game loop
-while game_runing:
-    gameclock.tick(fps)
-
-    draw_on_game_screen()
-    draw_text_on_screen(f"{ai}: {ai_score}", font, WHITE_COLOR, 10, 20)
-    draw_text_on_screen(f"You: {player_score}", font, WHITE_COLOR, SCREEN_WIDTH - 100, 20)
-    
-    # Draw Bats
-    player_bat.draw()
-    ai_bat.draw()
-    
-    # Draw Ball
-    ball.draw()
-    
-    # Move Player's Bat
-    player_bat.move()
-    
-    # Move Ball
-    ball.move()
-    # Checking for all event in the game
+while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            game_runing= False 
-            
-    # Update Screen   
-    pygame.display.update()        
-pygame.quit()
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                player_speed +=7
+            if event.key == pygame.K_UP:
+                player_speed -=7
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_DOWN:
+                player_speed = 0
+            if event.key == pygame.K_UP:
+                player_speed = 0
+
+    # Ball Animation 
+    ballPropertiesAnimation()
+
+
+    # Move player with specific speeed
+    player.y += player_speed
+
+    # Player;s Bat Restrition
+    playerBatRestriction()
+
+    # Player;s Bat Restrition
+    opponentBatRestriction()
+
+    # Opponent movement
+    if opponent.top < ball.y:
+        opponent.top += opponent_speed 
+    if opponent.bottom > ball.y:
+        opponent.bottom -= opponent_speed 
+
+    # Visuals
+    screen.fill(BACKGROUND_COLOUR)
+    pygame.draw.rect(screen, MATRIX_GREEN, player) 
+    pygame.draw.rect(screen, MATRIX_GREEN, opponent)
+    pygame.draw.ellipse(screen, MATRIX_GREEN, ball) 
+    pygame.draw.aaline(screen, LIGHT_GREY, (SCREEN_WIDTH/2, 0), (SCREEN_WIDTH/2, SCREEN_HEIGHT))
+
+    # update window
+    pygame.display.flip()
+    clock.tick(60)
