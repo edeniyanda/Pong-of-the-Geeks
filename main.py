@@ -49,7 +49,7 @@ def ballPropertiesAnimation():
         ball_xspeed *= -1
 
 # Player Geometry and Properties
-player = pygame.Rect(SCREEN_WIDTH-10, SCREEN_HEIGHT//2 - 55, 5, 140)
+player = pygame.Rect(SCREEN_WIDTH-15, SCREEN_HEIGHT//2 - 55, 10, 140)
 player_speed = 0
 def playerBatRestriction():
     global player_speed
@@ -58,8 +58,8 @@ def playerBatRestriction():
     if player.bottom >= SCREEN_HEIGHT:
         player.bottom = SCREEN_HEIGHT
 # opponent cordinates and Properties
-opponent = pygame.Rect(5, SCREEN_HEIGHT//2 - 55, 5, 140)
-opponent_speed = 20
+opponent = pygame.Rect(5, SCREEN_HEIGHT//2 - 55, 10, 140)
+opponent_speed = 15
 def opponentBatRestriction():
     global opponent_speed
     if opponent.top <= 0:
@@ -90,13 +90,13 @@ while True:
     ballPropertiesAnimation()
 
 
-    # Move player with specific speeed
+    # Move player with specific speed
     player.y += player_speed
 
-    # Player;s Bat Restrition
+    # Player's Bat Restrition
     playerBatRestriction()
 
-    # Player;s Bat Restrition
+    # Player's Bat Restrition
     opponentBatRestriction()
 
     # Opponent movement
@@ -114,4 +114,4 @@ while True:
 
     # update window
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(70)
